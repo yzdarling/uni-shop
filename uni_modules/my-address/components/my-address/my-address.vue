@@ -26,7 +26,7 @@
           收货地址:
         </view>
         <view class="row2-right">
-          {{addstr()}}
+          {{addstr}}
         </view>
       </view>
     </view>
@@ -53,16 +53,13 @@
     methods: {
       // 把 m_user 模块中的 updateAddress 函数映射到当前组件
       ...mapMutations('m_user', ['updateAddress']),
-      // 将 m_user 模块中的 addstr 映射到当前组件中使用
-      ...mapGetters('m_user', ['addstr']),
-
       // 添加收货地址
       async chooseAddress() {
         const [err, succ] = await uni.chooseAddress().catch(err => err)
-        // if (err === null && succ.errMsg === 'chooseAddress:ok') {
-        //   this.address = succ
-        // }
-        this.updateAddress(succ)
+        if (succ && succ.errMsg === 'chooseAddress:ok') {
+          //   this.address = succ
+          this.updateAddress(succ)
+        }
 
         // 3. 用户没有授权
         if (err && (err.errMsg === 'chooseAddress:fail auth deny' || err.errMsg ===
@@ -73,7 +70,7 @@
 
       // 调用此方法，重新发起收货地址的授权
       async reAuth() {
-        const [err2, configResult] = await uni.showModal({
+        const [err2, confirmResult] = await uni.showModal({
           content: "检测到您没打开地址权限,是否去打开",
           confirmText: "确认",
           cancleText: "取消"
@@ -101,6 +98,8 @@
     computed: {
       // 把 m_user 模块中的 address 对象映射当前组件中使用，代替 data 中 address 对象
       ...mapState('m_user', ['address']),
+      // 将 m_user 模块中的 addstr 映射到当前组件中使用
+      ...mapGetters('m_user', ['addstr']),
     }
   }
 </script>
